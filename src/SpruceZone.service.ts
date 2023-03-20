@@ -1,6 +1,5 @@
-import {Service} from 'hap-nodejs/dist/lib/Service'
 import {Zone, ZoneStatus} from './spruce.types'
-import {CharacteristicValue} from 'homebridge'
+import {CharacteristicValue, Service} from 'homebridge'
 import {SpruceControllerPlatformAccessory} from './platform-accessory'
 
 export class SpruceZone {
@@ -16,7 +15,8 @@ export class SpruceZone {
     this.duration = this.spruceControllerPlatformAccessory.platform.config.runMinutes * 60
 
     this.valveService = spruceControllerPlatformAccessory.accessory.getService(zone.zone_name) ||
-      this.spruceControllerPlatformAccessory.accessory.addService(Service.Valve, zone.zone_name, 'Irrigation Zone '+zoneNumber)
+      this.spruceControllerPlatformAccessory.accessory
+        .addService(spruceControllerPlatformAccessory.platform.Service.Valve, zone.zone_name, 'Irrigation Zone '+zoneNumber)
     this.valveService.setCharacteristic(this.spruceControllerPlatformAccessory.platform.Characteristic.Name, zone.zone_name)
     this.valveService.getCharacteristic(this.spruceControllerPlatformAccessory.platform.Characteristic.Active)
       .onGet(this.getZoneActive.bind(this))

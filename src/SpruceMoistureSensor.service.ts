@@ -39,7 +39,7 @@ export class SpruceMoistureSensorService {
   }
 
   async getCurrentTemperature(): Promise<CharacteristicValue> {
-    const temp = this.sensorStatus.temperature
+    const temp = this.convertFtoC(this.sensorStatus.temperature)
     this.spruceControllerPlatformAccessory.platform.log.debug('%s: getTemperature -> %s', this.sensorStatus.sensor_name, temp)
     return temp
   }
@@ -57,5 +57,9 @@ export class SpruceMoistureSensorService {
     return batteryLow ?
       this.spruceControllerPlatformAccessory.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_LOW :
       this.spruceControllerPlatformAccessory.platform.Characteristic.StatusLowBattery.BATTERY_LEVEL_NORMAL
+  }
+
+  private convertFtoC(fahrenheit: number) {
+    return (fahrenheit - 32) * 5 / 9
   }
 }

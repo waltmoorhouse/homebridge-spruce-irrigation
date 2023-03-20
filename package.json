@@ -1,7 +1,7 @@
 {
   "name": "homebridge-spruce-irrigation",
   "displayName": "HomeBridgeSpruceIrrigation",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A dynamic platform plugin for homebridge to provide access to the Spruce Irrigation System.",
   "main": "lib/index.js",
   "scripts": {

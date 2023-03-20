@@ -15,7 +15,7 @@ import {SpruceService} from './spruce-service'
 import {AccessoryContext, ControllerSettings} from './spruce.types'
 
 export class SpruceIrrigationPlatform implements DynamicPlatformPlugin {
-  public readonly VERSION = '1.0.3' // This should always match package.json version
+  public readonly VERSION = '1.0.4' // This should always match package.json version
   public readonly Service: typeof Service = this.api.hap.Service
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic
 

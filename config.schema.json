@@ -1,0 +1,40 @@
+{
+  "pluginAlias": "HomeBridgeSpruceIrrigation",
+  "pluginType": "platform",
+  "singular": true,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "pollSeconds": {
+        "title": "Poll interval (seconds)",
+        "type": "integer",
+        "minimum": 10,
+        "maximum": 600,
+        "required": false,
+        "default": "30"
+      },
+      "runMinutes": {
+        "title": "Valve Shutoff timer (minutes)",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 60,
+        "required": false,
+        "default": "15"
+      },
+      "lowBatteryLevel": {
+        "title": "Battery Level Minimum (lower battery levels will set off Battery Low Alert for Moisture sensor)",
+        "type": "number",
+        "minimum": 2.0,
+        "maximum": 6.0,
+        "required": false,
+        "default": "2.7"
+      },
+      "authToken": {
+        "title": "Spruce Account Access Token",
+        "type": "string",
+        "required": true,
+        "default": ""
+      }
+    }
+  }
+}

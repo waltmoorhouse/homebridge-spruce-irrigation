@@ -4,7 +4,7 @@ import {SpruceIrrigationPlatform} from './dynamic-platform'
 import {AccessoryContext, SensorStatus, ZoneStatus} from './spruce.types'
 import {SpruceZone} from './SpruceZone.service'
 import {SpruceMoistureSensorService} from './SpruceMoistureSensor.service'
-import {Characteristic, Service} from 'homebridge'
+import {Service} from 'homebridge'
 
 /**
  * Platform Accessory
@@ -61,7 +61,7 @@ export class SpruceControllerPlatformAccessory {
 
     // Zones
     for (const zoneNum in controller.zone) {
-      if (controller.zone[zoneNum].zenabled === "1") {
+      if (controller.zone[zoneNum].zenabled === '1') {
         this.zones.push(new SpruceZone(this, Number(zoneNum), controller.zone[zoneNum]))
       }
     }

@@ -77,7 +77,7 @@ export type ZoneStatus = {
 }
 
 export type SensorStatus = {
-  'device_id': string // "000D6F00040DB133",
+  'device_id': string // "000Djbhj40DB133",
   'sensor_name': string // "Berry Sensor",
   'moisture': number // 38,
   'moisture_DTepoch': number // 1583818827,
@@ -112,7 +112,7 @@ export type Forecast = Record<string, any>
     "average_change": -0.07,
     "average_rain": 0.049,
     "average_eto": 0.119,
-    "controller_id": "3a0055001651363036373538",
+    "controller_id": "",
     "last_sunrise": 1664892840,
     "last_sunset": 1664934360,
     "2022-10-10": {

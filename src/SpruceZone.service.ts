@@ -1,7 +1,6 @@
 import {Service} from 'hap-nodejs/dist/lib/Service'
 import {Zone, ZoneStatus} from './spruce.types'
 import {CharacteristicValue} from 'homebridge'
-import {Characteristic} from 'hap-nodejs/dist/lib/Characteristic'
 import {SpruceControllerPlatformAccessory} from './platform-accessory'
 
 export class SpruceZone {
@@ -18,20 +17,22 @@ export class SpruceZone {
 
     this.valveService = spruceControllerPlatformAccessory.accessory.getService(zone.zone_name) ||
       this.spruceControllerPlatformAccessory.accessory.addService(Service.Valve, zone.zone_name, 'Irrigation Zone '+zoneNumber)
-    this.valveService.setCharacteristic(Characteristic.Name, zone.zone_name)
-    this.valveService.getCharacteristic(Characteristic.Active)
+    this.valveService.setCharacteristic(this.spruceControllerPlatformAccessory.platform.Characteristic.Name, zone.zone_name)
+    this.valveService.getCharacteristic(this.spruceControllerPlatformAccessory.platform.Characteristic.Active)
       .onGet(this.getZoneActive.bind(this))
       .onSet(this.setZoneActive.bind(this))
-    this.valveService.getCharacteristic(Characteristic.InUse)
+    this.valveService.getCharacteristic(this.spruceControllerPlatformAccessory.platform.Characteristic.InUse)
       .onGet(this.getZoneInUse.bind(this))
   }
 
   async getZoneActive(): Promise<CharacteristicValue> {
-    return this.zoneInUse? Characteristic.Active.ACTIVE : Characteristic.Active.INACTIVE
+    return this.zoneInUse?
+      this.spruceControllerPlatformAccessory.platform.Characteristic.Active.ACTIVE :
+      this.spruceControllerPlatformAccessory.platform.Characteristic.Active.INACTIVE
   }
 
   async setZoneActive(value: CharacteristicValue): Promise<void> {
-    if (value === Characteristic.Active.ACTIVE) {
+    if (value === this.spruceControllerPlatformAccessory.platform.Characteristic.Active.ACTIVE) {
       this.zoneInUse = true
       return this.spruceControllerPlatformAccessory.platform.spruceService.turnOnZone(this.zoneNumber,
         this.duration)
@@ -42,14 +43,20 @@ export class SpruceZone {
   }
 
   async getZoneInUse(): Promise<CharacteristicValue> {
-    return this.zoneInUse? Characteristic.InUse.IN_USE : Characteristic.InUse.NOT_IN_USE
+    return this.zoneInUse ?
+      this.spruceControllerPlatformAccessory.platform.Characteristic.InUse.IN_USE :
+      this.spruceControllerPlatformAccessory.platform.Characteristic.InUse.NOT_IN_USE
   }
 
   updateStatus(zStat: ZoneStatus) {
     this.zoneInUse = zStat.zone_state === 1
-    this.valveService.updateCharacteristic(Characteristic.Active,
-      this.zoneInUse? Characteristic.Active.ACTIVE : Characteristic.Active.INACTIVE)
-    this.valveService.updateCharacteristic(Characteristic.InUse,
-      this.zoneInUse? Characteristic.InUse.IN_USE : Characteristic.InUse.NOT_IN_USE)
+    this.valveService.updateCharacteristic(this.spruceControllerPlatformAccessory.platform.Characteristic.Active,
+      this.zoneInUse ?
+        this.spruceControllerPlatformAccessory.platform.Characteristic.Active.ACTIVE :
+        this.spruceControllerPlatformAccessory.platform.Characteristic.Active.INACTIVE)
+    this.valveService.updateCharacteristic(this.spruceControllerPlatformAccessory.platform.Characteristic.InUse,
+      this.zoneInUse ?
+        this.spruceControllerPlatformAccessory.platform.Characteristic.InUse.IN_USE :
+        this.spruceControllerPlatformAccessory.platform.Characteristic.InUse.NOT_IN_USE)
   }
 }

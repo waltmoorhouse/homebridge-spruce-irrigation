@@ -1,14 +1,14 @@
 import {
   API,
   APIEvent,
+  Characteristic,
   DynamicPlatformPlugin,
   Logging,
   PlatformAccessory,
   PlatformConfig,
+  Service
 } from 'homebridge'
-import {Characteristic} from 'hap-nodejs/dist/lib/Characteristic'
 import {PLATFORM_NAME, PLUGIN_NAME} from './settings'
-import {Service} from 'hap-nodejs/dist/lib/Service'
 import {SpruceControllerPlatformAccessory} from './platform-accessory'
 import crypto from 'crypto'
 import {SpruceService} from './spruce-service'

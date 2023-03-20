@@ -4,8 +4,7 @@ import {SpruceIrrigationPlatform} from './dynamic-platform'
 import {AccessoryContext, SensorStatus, ZoneStatus} from './spruce.types'
 import {SpruceZone} from './SpruceZone.service'
 import {SpruceMoistureSensorService} from './SpruceMoistureSensor.service'
-import {Service} from 'hap-nodejs/dist/lib/Service'
-import {Characteristic} from 'hap-nodejs/dist/lib/Characteristic'
+import {Characteristic, Service} from 'homebridge'
 
 /**
  * Platform Accessory
@@ -39,12 +38,12 @@ export class SpruceControllerPlatformAccessory {
 
     // Master Valve Service
     this.masterValveService = accessory.getService('All Zones') ||
-      this.accessory.addService(Service.Valve, 'All Zones', 'Master Valve Service')
-    this.masterValveService.setCharacteristic(Characteristic.Name, 'All Zones')
-    this.masterValveService.getCharacteristic(Characteristic.Active)
+      this.accessory.addService(this.platform.Service.Valve, 'All Zones', 'Master Valve Service')
+    this.masterValveService.setCharacteristic(this.platform.Characteristic.Name, 'All Zones')
+    this.masterValveService.getCharacteristic(this.platform.Characteristic.Active)
       .onGet(this.getAnyZoneActive.bind(this))
       .onSet(this.setAllZonesActive.bind(this))
-    this.masterValveService.getCharacteristic(Characteristic.InUse)
+    this.masterValveService.getCharacteristic(this.platform.Characteristic.InUse)
       .onGet(this.getAnyZoneInUse.bind(this))
 
     // Sensors
@@ -95,15 +94,15 @@ export class SpruceControllerPlatformAccessory {
 
   async getAnyZoneActive(): Promise<CharacteristicValue> {
     for (const zoneNum of this.zones) {
-      if (Characteristic.Active.ACTIVE === await zoneNum.getZoneActive()) {
-        return Characteristic.Active.ACTIVE
+      if (this.platform.Characteristic.Active.ACTIVE === await zoneNum.getZoneActive()) {
+        return this.platform.Characteristic.Active.ACTIVE
       }
     }
-    return Characteristic.Active.INACTIVE
+    return this.platform.Characteristic.Active.INACTIVE
   }
 
   async setAllZonesActive(value: CharacteristicValue): Promise<void> {
-    if (value === Characteristic.Active.ACTIVE) {
+    if (value === this.platform.Characteristic.Active.ACTIVE) {
       return this.platform.spruceService.runAllZones(this.platform.config.runMinutes * 60)
     } else {
       return this.platform.spruceService.stopAllZones()
@@ -112,10 +111,10 @@ export class SpruceControllerPlatformAccessory {
 
   async getAnyZoneInUse(): Promise<CharacteristicValue> {
     for (const zoneNum of this.zones) {
-      if (Characteristic.InUse.IN_USE === await zoneNum.getZoneInUse()) {
-        return Characteristic.InUse.IN_USE
+      if (this.platform.Characteristic.InUse.IN_USE === await zoneNum.getZoneInUse()) {
+        return this.platform.Characteristic.InUse.IN_USE
       }
     }
-    return Characteristic.InUse.NOT_IN_USE
+    return this.platform.Characteristic.InUse.NOT_IN_USE
   }
 }

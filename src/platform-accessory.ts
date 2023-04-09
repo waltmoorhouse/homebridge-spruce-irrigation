@@ -47,7 +47,7 @@ export class SpruceControllerPlatformAccessory {
       .onGet(this.getAnyZoneInUse.bind(this))
 
     // Sensors
-    this.platform.spruceService.getSensorStatus(controller.device_id)
+    this.platform.spruceService!.getSensorStatus(controller.device_id)
       .then(status => {
         if (status) {
           const sensorStatuses: Record<string, SensorStatus> = status
@@ -68,7 +68,7 @@ export class SpruceControllerPlatformAccessory {
   }
 
   pollForNewData() {
-    this.platform.spruceService.getZoneStatus(this.context.controller.device_id)
+    this.platform.spruceService!.getZoneStatus(this.context.controller.device_id)
       .then(status => {
         if (status) {
           const zoneStatuses: ZoneStatus[] = status
@@ -79,7 +79,7 @@ export class SpruceControllerPlatformAccessory {
       })
       .catch(err => this.platform.log.error(err))
 
-    this.platform.spruceService.getSensorStatus(this.context.controller.device_id)
+    this.platform.spruceService!.getSensorStatus(this.context.controller.device_id)
       .then(status => {
         if (status) {
           const sensorStatuses: Record<string, SensorStatus> = status
@@ -103,9 +103,9 @@ export class SpruceControllerPlatformAccessory {
 
   async setAllZonesActive(value: CharacteristicValue): Promise<void> {
     if (value === this.platform.Characteristic.Active.ACTIVE) {
-      return this.platform.spruceService.runAllZones(this.platform.config.runMinutes * 60)
+      return this.platform.spruceService!.runAllZones(this.platform.config.runMinutes * 60)
     } else {
-      return this.platform.spruceService.stopAllZones()
+      return this.platform.spruceService!.stopAllZones()
     }
   }
 

@@ -133,11 +133,11 @@ export class SpruceService {
       },
       data : data
     })
-      .then((_response) => {
-        console.log('Valve state updated.')
+      .then((response) => {
+        this.log.info('Valve state updated: '+response)
       })
       .catch((error) => {
-        console.log(error)
+        this.log.error(error)
       })
   }
 
@@ -156,11 +156,11 @@ export class SpruceService {
       },
       data : data
     })
-      .then( (_response) => {
-        console.log('Valves started.')
+      .then( (response) => {
+        this.log.info('Valves started:' + response)
       })
       .catch( (error) => {
-        console.log(error)
+        this.log.error(error)
       })
   }
 
@@ -174,11 +174,11 @@ export class SpruceService {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
-      .then( (_response) => {
-        console.log('All valves stopped.')
+      .then( (response) => {
+        this.log.info('All valves stopped: '+ response)
       })
       .catch( (error) => {
-        console.log(error)
+        this.log.error(error)
       })
   }
 

@@ -34,11 +34,11 @@ export class SpruceZone {
   async setZoneActive(value: CharacteristicValue): Promise<void> {
     if (value === this.spruceControllerPlatformAccessory.platform.Characteristic.Active.ACTIVE) {
       this.zoneInUse = true
-      return this.spruceControllerPlatformAccessory.platform.spruceService.turnOnZone(this.zoneNumber,
+      return this.spruceControllerPlatformAccessory.platform.spruceService!.turnOnZone(this.zoneNumber,
         this.duration)
     } else {
       this.zoneInUse = false
-      return this.spruceControllerPlatformAccessory.platform.spruceService.turnOffZone(this.zoneNumber)
+      return this.spruceControllerPlatformAccessory.platform.spruceService!.turnOffZone(this.zoneNumber)
     }
   }
 

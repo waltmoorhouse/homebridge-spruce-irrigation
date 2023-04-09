@@ -32,8 +32,7 @@
       "authToken": {
         "title": "Spruce Account Access Token",
         "type": "string",
-        "required": true,
-        "default": ""
+        "required": true
       }
     }
   }

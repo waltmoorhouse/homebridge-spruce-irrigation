@@ -5,23 +5,40 @@ import qs from 'qs'
 
 export class SpruceService {
   private readonly BASE_URL = 'https://api.spruceirrigation.com/v2'
-  private readonly log: Logging
-  private authToken = ''
+  private borked = false
+  private netFails = 0
 
-  constructor(authToken: string, log: Logging) {
-    this.authToken = authToken
-    this.log = log
+  constructor(
+    private readonly authToken: string,
+    private readonly networkRetries: number,
+    private readonly log: Logging
+  ) {
+    axios.interceptors.response.use(response=> {
+      this.netFails = 0
+      return response
+    }, error => {
+      this.log.error(error)
+      if (++this.netFails > this.networkRetries)  {
+        this.borked = true
+      }
+    })
   }
 
   async getControllers(): Promise<Array<ControllerSettings>> {
     const controllers: ControllerSettings[] = []
-    const controllerRecords = await this.getControllerList()
-    if (controllerRecords) {
-      for (const key in controllerRecords) {
-        const c = await this.getControllerSettings(key)
-        if (c) {
-          controllers.push(c)
+    if (!this.borked) {
+      try {
+        const controllerRecords = await this.getControllerList()
+        if (controllerRecords) {
+          for (const key in controllerRecords) {
+            const c = await this.getControllerSettings(key)
+            if (c) {
+              controllers.push(c)
+            }
+          }
         }
+      } catch (e) {
+        this.log.error(e)
       }
     }
     return controllers
@@ -34,14 +51,14 @@ export class SpruceService {
         'Authorization': `Bearer ${this.authToken}`
       }
     })
-      .then(response => response.data as Record<string, Controller>)
+      .then(response => response?.data as Record<string, Controller>)
       .catch(error => {
         this.log.error(error)
         Promise.reject(error)
       })
   }
 
-  async getControllerSettings(controllerId: string): Promise<ControllerSettings | void> {
+  private async getControllerSettings(controllerId: string): Promise<ControllerSettings | void> {
     return axios.get(`${this.BASE_URL}/controller_settings?controller_id=${controllerId}`, {
       headers: {
         'Authorization': `Bearer ${this.authToken}`
@@ -55,6 +72,9 @@ export class SpruceService {
   }
 
   async getScheduleSettings(controllerId: string, scheduleId: string): Promise<ScheduleSettings | void> {
+    if (this.borked) {
+      return Promise.reject("network issues")
+    }
     return axios.get(`${this.BASE_URL}/schedule_settings?controller_id=${controllerId}&schedule_id=${scheduleId}`, {
       headers: {
         'Authorization': `Bearer ${this.authToken}`
@@ -68,6 +88,9 @@ export class SpruceService {
   }
 
   async getZoneStatus(controllerId: string): Promise<Array<ZoneStatus> | void> {
+    if (this.borked) {
+      return Promise.reject("network issues")
+    }
     return axios.get(`${this.BASE_URL}/zone_status?controller_id=${controllerId}`, {
       headers: {
         'Authorization': `Bearer ${this.authToken}`
@@ -81,6 +104,9 @@ export class SpruceService {
   }
 
   async getSensorStatus(controllerId: string): Promise<Record<string, SensorStatus> | void> {
+    if (this.borked) {
+      return Promise.reject("network issues")
+    }
     return axios.get(`${this.BASE_URL}/sensor_status?controller_id=${controllerId}`, {
       headers: {
         'Authorization': `Bearer ${this.authToken}`
@@ -94,6 +120,9 @@ export class SpruceService {
   }
 
   async getForecast(controllerId: string): Promise<Forecast | void> {
+    if (this.borked) {
+      return Promise.reject("network issues")
+    }
     return axios.get(`${this.BASE_URL}/climate_forecast?controller_id=${controllerId}`, {
       headers: {
         'Authorization': `Bearer ${this.authToken}`
@@ -142,47 +171,54 @@ export class SpruceService {
   }
 
   async runAllZones(zoneTime: number) {
-    const data = qs.stringify({
-      'zonetime': String(zoneTime)
-    });
+    if (!this.borked) {
+      const data = qs.stringify({
+        'zonetime': String(zoneTime)
+      });
 
-    axios({
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: `${this.BASE_URL}/runall`,
-      headers: {
-        'Authorization': `Bearer ${this.authToken}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      data : data
-    })
-      .then( (response) => {
-        this.log.info('Valves started:' + response)
+      axios({
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: `${this.BASE_URL}/runall`,
+        headers: {
+          'Authorization': `Bearer ${this.authToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: data
       })
-      .catch( (error) => {
-        this.log.error(error)
-      })
+        .then((response) => {
+          this.log.info('Valves started:' + response)
+        })
+        .catch((error) => {
+          this.log.error(error)
+        })
+    }
   }
 
   async stopAllZones() {
-    axios({
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: `${this.BASE_URL}/stop`,
-      headers: {
-        'Authorization': `Bearer ${this.authToken}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
-      .then( (response) => {
-        this.log.info('All valves stopped: '+ response)
+    if (!this.borked) {
+      axios({
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: `${this.BASE_URL}/stop`,
+        headers: {
+          'Authorization': `Bearer ${this.authToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       })
-      .catch( (error) => {
-        this.log.error(error)
-      })
+        .then((response) => {
+          this.log.info('All valves stopped: ' + response)
+        })
+        .catch((error) => {
+          this.log.error(error)
+        })
+    }
   }
 
   async pauseSchedule(pauseTime?: number) {
+    if (this.borked) {
+      return Promise.reject("network issues")
+    }
     return axios.postForm(`${this.BASE_URL}/pause`, {
       headers: {
         'Authorization': `Bearer ${this.authToken}`,
@@ -200,6 +236,9 @@ export class SpruceService {
   }
 
   async resumeSchedule(pauseTime = 0) {
+    if (this.borked) {
+      return Promise.reject("network issues")
+    }
     return axios.postForm(`${this.BASE_URL}/resume`, {
       headers: {
         'Authorization': `Bearer ${this.authToken}`,
@@ -225,6 +264,9 @@ export class SpruceService {
   }
 
   private async postSchedule(scheduleID: string, onoff: number) {
+    if (this.borked) {
+      return Promise.reject("network issues")
+    }
     return axios.postForm(`${this.BASE_URL}/schedule`, {
       headers: {
         'Authorization': `Bearer ${this.authToken}`,

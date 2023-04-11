@@ -15,7 +15,7 @@ import {SpruceService} from './spruce-service'
 import {AccessoryContext, ControllerSettings} from './spruce.types'
 
 export class SpruceIrrigationPlatform implements DynamicPlatformPlugin {
-  public readonly VERSION = '1.1.0' // This should always match package.json version
+  public readonly VERSION = '1.1.1' // This should always match package.json version
   public readonly Service: typeof Service = this.api.hap.Service
   public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic
 
@@ -34,17 +34,20 @@ export class SpruceIrrigationPlatform implements DynamicPlatformPlugin {
         log.error('You must configure the AuthToken to start the plugin.')
         return
       }
-      this.spruceService = new SpruceService(config.authToken, log)
 
       if (!config.pollSeconds || Number.isNaN(config.pollSeconds) || Number(config.pollSeconds) < 10) {
-        this.config.pollSeconds = 30
+        config.pollSeconds = 30
+      }
+      if (!config.networkRetries || Number.isNaN(config.networkRetries) || Number(config.networkRetries) < 1 || Number(config.networkRetries) > 10) {
+        config.networkRetries = 3
       }
       if (!config.runMinutes || Number.isNaN(config.runMinutes) || Number(config.runMinutes) < 1) {
-        this.config.runMinutes = 15
+        config.runMinutes = 15
       }
       if (!config.lowBatteryLevel || Number.isNaN(config.lowBatteryLevel) || Number(config.lowBatteryLevel) < 2.0) {
-        this.config.pollSeconds = 2.7
+        config.pollSeconds = 2.7
       }
+      this.spruceService = new SpruceService(config.authToken, config.networkRetries, log)
 
       log.info(PLATFORM_NAME + ' finished initializing!')
 

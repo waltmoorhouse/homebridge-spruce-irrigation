@@ -5,6 +5,11 @@
   "schema": {
     "type": "object",
     "properties": {
+      "name": {
+        "title": "Plugin name as shown in Homebridge Log",
+        "default": "SpruceIrrigation",
+        "required": true
+      },
       "pollSeconds": {
         "title": "Poll interval (seconds)",
         "type": "integer",
@@ -28,6 +33,13 @@
         "maximum": 6.0,
         "required": false,
         "default": "2.7"
+      },
+      "networkRetries": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10,
+        "required": true,
+        "default": "3"
       },
       "authToken": {
         "title": "Spruce Account Access Token",

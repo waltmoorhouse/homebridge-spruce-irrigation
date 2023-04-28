@@ -23,6 +23,7 @@ grants access to your account, so do not share it or post it anywhere.
 
 # Donations
 
-If you find this useful and have a few extra bucks laying around, 
-you can send a [donation](https://www.paypal.com/donate/?hosted_button_id=4SU4V4RS8G32W)
+If you find this useful and have a few extra bucks lying around,
+you can send a donation with [PayPal](https://www.paypal.com/paypalme/waltmoorhouse) or
+[venmo](https://venmo.com/?txn=pay&audience=public&recipients=Walt-Moorhouse),
 so I can buy more IoT devices.  :-)
